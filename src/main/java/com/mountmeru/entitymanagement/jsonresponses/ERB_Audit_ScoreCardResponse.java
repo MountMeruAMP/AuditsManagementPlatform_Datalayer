@@ -28,14 +28,10 @@ public class ERB_Audit_ScoreCardResponse {
 	private String auditendtime;	
 	private String overallgrade;
 	private String remarks;
+	private List<ERB_Audit_ScorecardSplitter> header;	
+	private List<ERB_Audit_ScorecardSplitter> subheader;
+	private List<ERB_Audit_ScorecardSplitter> previousscores;
 	
-	public String getRemarks() {
-		return remarks;
-	}
-	public void setRemarks(String remarks) {
-		this.remarks = remarks;
-	}
-	private List<ERB_Audit_ScorecardSplitter> listERB_Audit_ScorecardSplitter;
 	public String getAudit_id() {
 		return audit_id;
 	}
@@ -125,13 +121,7 @@ public class ERB_Audit_ScoreCardResponse {
 	}
 	public void setAuditendtime(String auditendtime) {
 		this.auditendtime = auditendtime;
-	}
-	public List<ERB_Audit_ScorecardSplitter> getListERB_Audit_ScorecardSplitter() {
-		return listERB_Audit_ScorecardSplitter;
-	}
-	public void setListERB_Audit_ScorecardSplitter(List<ERB_Audit_ScorecardSplitter> listERB_Audit_ScorecardSplitter) {
-		this.listERB_Audit_ScorecardSplitter = listERB_Audit_ScorecardSplitter;
-	}
+	}	
 	public String getHeading() {
 		return heading;
 	}
@@ -155,5 +145,30 @@ public class ERB_Audit_ScoreCardResponse {
 	}
 	public void setOverallgrade(String overallgrade) {
 		this.overallgrade = overallgrade;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+	public List<ERB_Audit_ScorecardSplitter> getHeader() {
+		return header;
+	}
+	public void setHeader(List<ERB_Audit_ScorecardSplitter> header) {
+		this.header = header;
+	}
+	public List<ERB_Audit_ScorecardSplitter> getSubheader() {
+		return subheader;
+	}
+	public void setSubheader(List<ERB_Audit_ScorecardSplitter> subheader) {
+		this.subheader = subheader;
+	}
+	public List<ERB_Audit_ScorecardSplitter> getPreviousscores() {
+		return previousscores; 
+	}
+	public void setPreviousscores(List<ERB_Audit_ScorecardSplitter> previousscores) {
+		this.previousscores = previousscores;
 	}
 }
