@@ -60,8 +60,7 @@ public class ScorecardServiceImpl implements ScorecardService{
 	Audit_MasterRepository oAudit_MastRepo;
 	
 	@Autowired
-	StationsRepository oStationRep;
-	
+	StationsRepository oStationRep;	
 	
 	@Autowired
 	UsersRepository oUsersRepository;
@@ -76,7 +75,7 @@ public class ScorecardServiceImpl implements ScorecardService{
 	ClustersService oClustersService;
 	
 	@Autowired
-	ScoreCardRepository oScoreCardRepository;
+	ScoreCardRepository oScoreCardRepository; 
 	
 	private String overallGrade = "";
 	public ERB_Audit_ScoreCardResponse getERBConsumerAuditScoreCard(long audit_id, long loginUserId) {
@@ -94,6 +93,8 @@ public class ScorecardServiceImpl implements ScorecardService{
 		
 		// Top Header Data
 		oERB_Audit_ScoreCardResponse.setHeading("ZAMBIA RETAIL STATION ERB CONSUMER AUDIT");
+		if("ERBTECH".equals(auditType))
+			oERB_Audit_ScoreCardResponse.setHeading("ZAMBIA RETAIL STATION ERB TECHNICAL AUDIT");
 		oERB_Audit_ScoreCardResponse.setAudit_id(String.valueOf(audit_id));
 		oERB_Audit_ScoreCardResponse.setStationcode(oAudit_Master.getStationCode());
 		oERB_Audit_ScoreCardResponse.setStationname(oStation.getStationName());
@@ -120,19 +121,54 @@ public class ScorecardServiceImpl implements ScorecardService{
 		
 		
 		// Header Level Data
+		List<UtilDTO> listUtilHeader = new LinkedList<UtilDTO>();
 		oERB_Audit_ScoreCardResponse.setEvolscoresummary("EVALUATION SCORE SUMMARY");
-		List<UtilDTO> listUtilHeader = oUtilService.getAllRowsByType("SCORECARD-ERBCONA-HEADER");
-		oERB_Audit_ScoreCardResponse.setListERB_Audit_ScorecardSplitter(getERBConsumerAuditScoreCardSplitterHeader(audit_id, auditType, listUtilHeader));
+		if("ERBCONA".equals(auditType))
+			listUtilHeader = oUtilService.getAllRowsByType("SCORECARD-ERBCONA-HEADER");
+		else if ("ERBTECH".equals(auditType))
+			listUtilHeader = oUtilService.getAllRowsByType("SCORECARD-ERBTECH-HEADER");
+		
+		oERB_Audit_ScoreCardResponse.setHeader(getERBConsumerAuditScoreCardSplitterHeader(audit_id, auditType, listUtilHeader));
 
 		
 		// Sub Header Level Data.
-		oERB_Audit_ScoreCardResponse.setCumusummary("CUMMULATIVE SUMMARY SECTIONWISE");
-		List<UtilDTO> listUtilSubHeader = oUtilService.getAllRowsByType("SCORECARD-ERBCONA-SUBHEADER");
-		oERB_Audit_ScoreCardResponse.setListERB_Audit_ScorecardSplitter(getERBConsumerAuditScoreCardSplitterSubHeader(audit_id, auditType, listUtilSubHeader));
-
+		if("ERBCONA".equals(auditType)) {
+			oERB_Audit_ScoreCardResponse.setCumusummary("CUMMULATIVE SUMMARY SECTIONWISE");
+			List<UtilDTO> listUtilSubHeader = oUtilService.getAllRowsByType("SCORECARD-ERBCONA-SUBHEADER");
+			oERB_Audit_ScoreCardResponse.setSubheader(getERBConsumerAuditScoreCardSplitterSubHeader(audit_id, auditType, listUtilSubHeader));
+		}
+		// Previous Score-card.
+		oERB_Audit_ScoreCardResponse.setPreviousscores(getPreviousScoreCards(oAudit_Master.getStationCode(), auditType));
+		
 		// Don't change the position of this code.
 		oERB_Audit_ScoreCardResponse.setOverallgrade(overallGrade);
 		return oERB_Audit_ScoreCardResponse;
+	}	
+	private List<ERB_Audit_ScorecardSplitter> getPreviousScoreCards(String stationCode, String auditType) 
+	{
+		List<ERB_Audit_ScorecardSplitter> listSplitter = new LinkedList<ERB_Audit_ScorecardSplitter>();
+		List<Audit_Master> listAudits =  oAudit_MastRepo.findAllAuditsForStationAndAuditType(stationCode, auditType);
+		int counter = 1;
+		List<Long> auditIds = new ArrayList<Long>();
+		for(Audit_Master oAudit_Master: listAudits)
+		{
+			auditIds.add(oAudit_Master.getId());
+		}
+		List<ScoreCard> listScoreCards = oScoreCardRepository.findByAudit_Id(auditIds);
+		for(ScoreCard oScoreCard: listScoreCards)
+		{
+			ERB_Audit_ScorecardSplitter oSplitter = new ERB_Audit_ScorecardSplitter();
+			oSplitter.setSectiontype("Scorecard");
+			oSplitter.setSectionname(""+counter);
+			oSplitter.setNctotal(String.valueOf(oScoreCard.getNumber_NC()));
+			oSplitter.setNcpercent(CommonUtility.calculatePercentage(oScoreCard.getNumber_NC(), oScoreCard.getMax_Score()));
+			oSplitter.setObtainedscore(String.valueOf(oScoreCard.getObtained_Score()));
+			oSplitter.setObtainedpercent(CommonUtility.calculatePercentage(oScoreCard.getObtained_Score(), oScoreCard.getMax_Score()));
+			oSplitter.setGrade(CommonUtility.calculateGrade(Double.parseDouble(CommonUtility.calculatePercentage(oScoreCard.getObtained_Score(), oScoreCard.getMax_Score()))));
+			counter++;
+			listSplitter.add(oSplitter);
+		}		
+		return listSplitter;
 	}	
 	public List<ERB_Audit_ScorecardSplitter> getERBConsumerAuditScoreCardSplitterHeader(long audit_id, String auditType, List<UtilDTO> listUtilHeader) 
 	{
