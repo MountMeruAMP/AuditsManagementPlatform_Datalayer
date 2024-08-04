@@ -34,7 +34,7 @@ public class LoginController {
 	public ResponseEntity<String> generateOTP(@RequestBody UserRequest userRequest)
 	{
 		userLoginService.generateOTP(userRequest.getId());
-		return  ResponseEntity.status(HttpStatus.OK).body("OTP generated and sent to the User Registered Phone Number.");
+		return  ResponseEntity.status(HttpStatus.OK).body("{ \"message\": OTP generated and sent to the User Registered Phone Number. }");
 	}
 	@PostMapping(value = "/validateuserotp", produces ="application/json")
 	public ResponseEntity<UsersDTO> validateUserAndOTP(@RequestBody UserLoginRequest userLogin)
