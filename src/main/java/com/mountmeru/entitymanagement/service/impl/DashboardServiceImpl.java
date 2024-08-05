@@ -163,8 +163,8 @@ public class DashboardServiceImpl implements DashboardService {
                         .toList();
             } else {
                 scoreSummaryStationsFinal = scoreSummaryStations.stream()
-                        .sorted(Comparator.comparing(AuditScoreSummaryStation::getAvgScore))
-                        .limit(limit)
+                        .sorted(Comparator.comparing(AuditScoreSummaryStation::getAvgScore).reversed())
+                        .skip(Math.max(0, scoreSummaryStations.size() - limit))
                         .toList();
             }
 

@@ -1,14 +1,10 @@
 package com.mountmeru.entitymanagement.controller;
 
+import com.mountmeru.entitymanagement.jsonresponses.CompletedAuditResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.mountmeru.entitymanagement.dto.Audit_MasterDTO;
 import com.mountmeru.entitymanagement.jsonresponses.UpcomingAuditsResponse;
@@ -55,4 +51,12 @@ public class Audit_MasterController {
 	 * ArrayList<Audit_MasterDTO>(); return new ResponseEntity<>(listAudits),
 	 * HttpStatus.OK); }
 	 */
+
+	@GetMapping("/getallcompletedaudits")
+	public ResponseEntity<CompletedAuditResponse> getAllCompletedAudits(@RequestHeader long loginUserId,
+																		@RequestParam(name = "from", required = false) String fromDate,
+																		@RequestParam(name = "to", required = false)String toDate) {
+		// TODO - Validate LoginUserid.
+		return new ResponseEntity<>(oAudit_MasterService.getAllCompletedAudits(loginUserId, fromDate, toDate), HttpStatus.OK);
+	}
 }
