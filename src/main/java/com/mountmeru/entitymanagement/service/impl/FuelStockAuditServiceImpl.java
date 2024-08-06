@@ -6,6 +6,8 @@ import com.mountmeru.entitymanagement.mapper.ProductMapper;
 import com.mountmeru.entitymanagement.repository.ProductRepository;
 import com.mountmeru.entitymanagement.service.FuelStockAuditService;
 import com.mountmeru.entitymanagement.utils.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ import java.util.Optional;
 @Service
 public class FuelStockAuditServiceImpl implements FuelStockAuditService {
 
+    Logger log = LoggerFactory.getLogger(FuelStockAuditServiceImpl.class);
     @Autowired
     DateUtils oDateUtils;
 
@@ -32,11 +35,14 @@ public class FuelStockAuditServiceImpl implements FuelStockAuditService {
 
     @Override
     public Optional<ProductDTO> getProduct(long loginUserId) {
+        log.info("Product searching for user: {}", loginUserId);
+        Optional<Product> product = productRepository.findByCreatedBy(loginUserId);
 
-        Product product = productRepository.findByCreatedBy(loginUserId)
-//        .orElseThrow(() -> new RuntimeException("User Does Not Exist"));
-        .orElse(new Product());
+        product.ifPresent(p -> {
+            // Perform some side-effects if needed, e.g., logging
+            log.info("Product found for user: {}", loginUserId);
+        });
 
-        return Optional.ofNullable(ProductMapper.mapToDTO(product));
+        return product.map(ProductMapper::mapToDTO);
     }
 }

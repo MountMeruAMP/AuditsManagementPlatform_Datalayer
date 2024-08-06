@@ -1,7 +1,9 @@
 package com.mountmeru.entitymanagement.controller;
 
 import com.mountmeru.entitymanagement.dto.ProductDTO;
-import com.mountmeru.entitymanagement.jsonresponses.DashboardResponse;
+import com.mountmeru.entitymanagement.jsonresponses.common.ResponseErrorVo;
+import com.mountmeru.entitymanagement.jsonresponses.common.ResponseVO;
+import com.mountmeru.entitymanagement.jsonresponses.common.ResponseVOBuilder;
 import com.mountmeru.entitymanagement.service.FuelStockAuditService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -9,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/audit/fuelstock")
@@ -28,22 +32,46 @@ public class FuelStockAuditController {
     }
 
     @PostMapping(value = "/createproduct", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProductDTO> createProductDetails(@RequestHeader long loginUserId, @RequestBody ProductDTO productDTO){
+    public ResponseEntity<ResponseVO<ProductDTO>> createProductDetails(@RequestHeader long loginUserId, @RequestBody ProductDTO productDTO){
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         productDTO.setCreatedby(loginUserId);
-        return new ResponseEntity<>(oFuelStockAuditService.createProduct(productDTO), headers, HttpStatus.OK);
+
+        ProductDTO resDTO = oFuelStockAuditService.createProduct(productDTO);
+        ResponseEntity<ResponseVO<ProductDTO>> response;
+        if (resDTO.getCounter() != 0) {
+            response = new ResponseEntity<>(new ResponseVOBuilder<ProductDTO>()
+                    .addData(productDTO)
+                    .build(), headers, HttpStatus.CREATED);
+        } else {
+            response = new ResponseEntity<>(new ResponseVOBuilder<ProductDTO>()
+                    .error(new ResponseErrorVo("400", "Product not created!"))
+                    .build(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
     }
 
     @GetMapping(value = "/getproduct")
-    public ResponseEntity<ProductDTO> getProductDetails(@RequestHeader long loginUserId){
+    public ResponseEntity<ResponseVO<ProductDTO>> getProductDetails(@RequestHeader long loginUserId){
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
+        Optional<ProductDTO> productDTO = oFuelStockAuditService.getProduct(loginUserId);
+//        ResponseVO<ProductDTO> res;
+        ResponseEntity<ResponseVO<ProductDTO>> response;
+        if (productDTO.isPresent()) {
+            response = new ResponseEntity<>(new ResponseVOBuilder<ProductDTO>()
+                    .addData(productDTO.get(), "201", "Successful")
+                    .build(), headers, HttpStatus.OK);
+        } else {
+            response = new ResponseEntity<>(new ResponseVOBuilder<ProductDTO>()
+                    .error(new ResponseErrorVo("404", "Product not found!"))
+                    .build(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
-        return new ResponseEntity<>(oFuelStockAuditService.getProduct(loginUserId).get(), headers, HttpStatus.OK);
+        return response;
     }
 }
