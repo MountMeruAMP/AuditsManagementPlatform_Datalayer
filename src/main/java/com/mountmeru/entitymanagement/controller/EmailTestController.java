@@ -2,6 +2,7 @@ package com.mountmeru.entitymanagement.controller;
 
 import com.mountmeru.entitymanagement.dto.EmailDTO;
 import com.mountmeru.entitymanagement.service.EmailService;
+import com.mountmeru.entitymanagement.service.SmsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,9 @@ public class EmailTestController {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private SmsService smsService;
 
 
     @PostMapping(value = "/send", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -44,5 +48,11 @@ public class EmailTestController {
         emailService.sendEmail(emailDTO, emailDTO.getContent(), emailDTO.getFileName());
 
         return "Email sent successfully";
+    }
+
+    @GetMapping(value = "/testOtp", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String testingOtpSms(@RequestParam String phone, @RequestParam String otp) {
+
+        return smsService.sendOtp(phone, otp);
     }
 }
