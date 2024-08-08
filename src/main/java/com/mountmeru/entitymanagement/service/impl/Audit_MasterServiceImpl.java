@@ -354,6 +354,9 @@ public class Audit_MasterServiceImpl implements Audit_MasterService {
 		//TODO
 		//2. Create the Email Service. Send the email to the Cluster Manager, Region Manager,Station Manager, 
 		//Auditor attaching the physically signed file.
+
+		// from auditMasterDTO get the station code -> from station table, fetch station manager, cluster
+		// -> from user fetch email, from cluster get id -> from user fetch email by cluster
 		
 		//3. Submit the Audit. Change the state of the Audit to Completed.
 		Audit_Master audit_master = Audit_MasterMapper.mapToObject(auditMasterDTO); 
