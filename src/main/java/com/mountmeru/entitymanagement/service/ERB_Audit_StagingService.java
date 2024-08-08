@@ -8,7 +8,7 @@ import com.mountmeru.entitymanagement.dto.ERB_Audit_StagingDTO;
 
 @Service
 public interface ERB_Audit_StagingService {
-//	List<ERB_Audit_StagingDTO> createERBAuditStaging(List<ERB_Audit_StagingDTO> dto, long loginUserId);
-	List<ERB_Audit_StagingDTO> createERBAuditStaging(ERB_Audit_StagingDTO dto, long loginUserId);
+	List<ERB_Audit_StagingDTO> createERBAuditStaging(List<ERB_Audit_StagingDTO> dto, long loginUserId);
+//	List<ERB_Audit_StagingDTO> createERBAuditStaging(ERB_Audit_StagingDTO dto, long loginUserId);
 	List<ERB_Audit_StagingDTO> updateERBAuditStaging(List<ERB_Audit_StagingDTO> dto, long loginUserId);
 }

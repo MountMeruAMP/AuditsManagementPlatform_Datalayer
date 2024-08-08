@@ -60,19 +60,19 @@ public class FuelStockAuditServiceImpl implements FuelStockAuditService {
 //        File pdfDest = new File("pdfFilePath");
 
         // Creating the pdf
-        try {
-            // Convert HTML String to PDF File
-            String filename = new Date().getTime()+"_fuel_stock_audit.pdf";
-
-            float width = 1190;
-            float height = 1684;
-            PdfUtils.generatePDFfromHtml(Files.readString(Paths.get(htmlSource.getPath())), filename, width, height);
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            log.info("pdf generation done.");
-        }
+//        try {
+//            // Convert HTML String to PDF File
+//            String filename = new Date().getTime()+"_fuel_stock_audit.pdf";
+//
+//            float width = 1190;
+//            float height = 1684;
+//            PdfUtils.generatePDFfromHtml(Files.readString(Paths.get(htmlSource.getPath())), filename, width, height);
+//
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        } finally {
+//            log.info("pdf generation done.");
+//        }
         return Optional.of("Success");
     }
 }

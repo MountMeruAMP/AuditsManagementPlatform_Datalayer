@@ -50,8 +50,8 @@ public class ERB_AuditController {
 		return new ResponseEntity<>(oUtilService.getAllRowsByType(oUtilDTO.getType()), HttpStatus.CREATED);
 	}
 	@PostMapping("/createerbaudit")
-//	public ResponseEntity<List<ERB_Audit_StagingDTO>> createerbaudit(@RequestBody List<ERB_Audit_StagingDTO> listStagingDTO, @RequestHeader long loginUserId)
-	public ResponseEntity<List<ERB_Audit_StagingDTO>> createerbaudit(@RequestBody ERB_Audit_StagingDTO listStagingDTO, @RequestHeader long loginUserId)
+	public ResponseEntity<List<ERB_Audit_StagingDTO>> createerbaudit(@RequestBody List<ERB_Audit_StagingDTO> listStagingDTO, @RequestHeader long loginUserId)
+//	public ResponseEntity<List<ERB_Audit_StagingDTO>> createerbaudit(@RequestBody ERB_Audit_StagingDTO listStagingDTO, @RequestHeader long loginUserId)
 	{
 		// TODO - Validate LoginUserid.
 		return new ResponseEntity<>(oERB_Audit_StagingService.createERBAuditStaging(listStagingDTO, loginUserId), HttpStatus.CREATED);

@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -25,8 +26,9 @@ public class SmsServiceImpl implements SmsService {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Value("")
-    private String messageTemplate;
+    @Autowired
+    private Environment env;
+
 
     @Override
     public String sendOtp(String phone, String otp) {
@@ -37,10 +39,10 @@ public class SmsServiceImpl implements SmsService {
 //        String baseUrl = "http://sms.genialconsultancy.com/submitsms.jsp?";
 
         String message = Constants.MESSAGE_TEMPLATE;
-        String user = "genial12";
-        String key = "f72e846523XX";
-        String senderId = "MERU";
-        String accusage = "3";
+        String user = env.getProperty("application.sms.user");
+        String key = env.getProperty("application.sms.key");
+        String senderId = env.getProperty("application.sms.senderId");
+        String accusage = env.getProperty("application.sms.accusage");
 
         try {
 
