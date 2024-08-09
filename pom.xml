@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.mountmeru.entitymanagement</groupId>
 	<artifactId>audit_management_system</artifactId>
-	<version>0.0.8-SNAPSHOT</version>
+	<version>0.0.9-SNAPSHOT</version>
 	<name>audit_management_system</name>
 	<description>Audit Management System - Entity Management</description>
 	<packaging>war</packaging>
