@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class EmailDTO implements Serializable {
 
-    private String from;
+//    private String from;
     private String to;
 
     private String[] toMultiple;
@@ -14,13 +14,6 @@ public class EmailDTO implements Serializable {
 
     private String fileName; // along with the path and extension.
 
-    public String getFrom() {
-        return from;
-    }
-
-    public void setFrom(String from) {
-        this.from = from;
-    }
 
     public String getTo() {
         return to;

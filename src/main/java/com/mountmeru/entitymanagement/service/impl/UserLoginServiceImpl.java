@@ -5,6 +5,7 @@ import java.util.Random;
 
 import javax.management.RuntimeErrorException;
 
+import com.mountmeru.entitymanagement.service.SmsService;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +39,10 @@ public class UserLoginServiceImpl implements UserLoginService {
 	DateUtils oDateUtils;
 	
 	@Autowired
-	UsersService usersService;	
+	UsersService usersService;
+
+	@Autowired
+	SmsService oSmsService;
 	
 	UserLoginRepository oUserLoginRepository;
 	public UserLoginServiceImpl(UserLoginRepository oUserLoginRepository)
@@ -73,7 +77,8 @@ public class UserLoginServiceImpl implements UserLoginService {
 		// Text Message Body
 		// Text Message OTP
 		// Phone Number
-		return new String("Ok");
+		UsersDTO usersDTO = usersService.getUsersByUserId(userId);
+		return oSmsService.sendOtp(usersDTO.getPhone1(), newOTP);
 	}
 	@Override
 	public UsersDTO validateUserForUserIdAndOTP(long userId, String otp) {

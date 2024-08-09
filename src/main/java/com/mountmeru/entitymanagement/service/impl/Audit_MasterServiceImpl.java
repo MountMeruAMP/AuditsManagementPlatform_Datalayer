@@ -9,16 +9,16 @@ import java.util.concurrent.TimeUnit;
 
 import javax.management.RuntimeErrorException;
 
+import com.mountmeru.entitymanagement.dto.*;
+import com.mountmeru.entitymanagement.service.*;
+import com.mountmeru.entitymanagement.utils.Constants;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.mountmeru.entitymanagement.dto.Audit_MasterDTO;
-import com.mountmeru.entitymanagement.dto.StationsDTO;
-import com.mountmeru.entitymanagement.dto.UsersDTO;
-import com.mountmeru.entitymanagement.dto.UtilDTO;
 import com.mountmeru.entitymanagement.entity.Audit_Master;
 import com.mountmeru.entitymanagement.entity.ERB_Audit_Final;
 import com.mountmeru.entitymanagement.entity.ERB_Audit_Staging;
@@ -32,13 +32,6 @@ import com.mountmeru.entitymanagement.mapper.ERB_Audit_StagingToFinalMapper;
 import com.mountmeru.entitymanagement.repository.Audit_MasterRepository;
 import com.mountmeru.entitymanagement.repository.ERB_Audit_StagingRepository;
 import com.mountmeru.entitymanagement.repository.RolesRepository;
-import com.mountmeru.entitymanagement.service.Audit_MasterService;
-import com.mountmeru.entitymanagement.service.ClustersService;
-import com.mountmeru.entitymanagement.service.ERB_Audit_StagingService;
-import com.mountmeru.entitymanagement.service.RolesService;
-import com.mountmeru.entitymanagement.service.StationsService;
-import com.mountmeru.entitymanagement.service.UsersService;
-import com.mountmeru.entitymanagement.service.UtilService;
 import com.mountmeru.entitymanagement.utils.DateUtils;
 @Service
 public class Audit_MasterServiceImpl implements Audit_MasterService {
@@ -79,6 +72,10 @@ public class Audit_MasterServiceImpl implements Audit_MasterService {
 	
 	@Autowired 
 	RolesRepository roleRepo;
+
+	@Autowired
+	private EmailService oEmailService;
+
 	
 	public Audit_MasterServiceImpl(Audit_MasterRepository oAudit_MasterRepository)
 	{
@@ -354,19 +351,44 @@ public class Audit_MasterServiceImpl implements Audit_MasterService {
 		//TODO
 		//2. Create the Email Service. Send the email to the Cluster Manager, Region Manager,Station Manager, 
 		//Auditor attaching the physically signed file.
-		
+
+		// from auditMasterDTO get the station code -> from station table, fetch station manager, cluster
+		// -> from user fetch email, from cluster get id -> from user fetch email by cluster
+		StationsDTO station = oStationsService.getStationsById(auditMasterDTO.getStationcode());
+		if (null == station) {
+			throw new RuntimeErrorException(new Error(), "No station found");
+		}
+
+		ClustersDTO cluster = oClustersService.getClusterById(station.getClusterid());
+		if (null == cluster) {
+			throw new RuntimeErrorException(new Error(), "No cluster found");
+		}
+
+		UsersDTO userCM = oUsersService.getUsersByUserId(NumberUtils.toLong(cluster.getManagerid()));
+		UsersDTO userSM = oUsersService.getUsersByUserId(NumberUtils.toLong(station.getManager_id()));
+
+		EmailDTO emailDTO = new EmailDTO();
+		emailDTO.setToMultiple(new String[]{userCM.getEmail(), userSM.getEmail(), "arindam.deb@infinivalue.com"});
+		emailDTO.setSubject(Constants.EMAIL_SUBJECT);
+		emailDTO.setContent(Constants.EMAIL_CONTENT);
+
+		// send email
+		oEmailService.sendEmail(emailDTO);
+//		oEmailService.sendEmail(emailDTO, template, pdf);
+
 		//3. Submit the Audit. Change the state of the Audit to Completed.
 		Audit_Master audit_master = Audit_MasterMapper.mapToObject(auditMasterDTO); 
 		audit_master.setUpdatedBy(loginUserId);
 		audit_master.setUpdatedTS(oDateUtils.getCurrentTimeStamp());
 		audit_master.setEndTime(oDateUtils.getCurrentTimeStamp());
 		audit_master.setState("Completed");
-		
+
+//		TODO: pass generated pdf
 		audit_master.setDoc_Uploaded_FileName("Uploaded File Name");
 		audit_master.setDoc_Uploaded_FilePath("Uploaded File Path"); 
 		
 		//4. Copy the Audit data from Staging Table to Final Table.
-		List<ERB_Audit_Staging> objList =  oERB_Audit_StagingRepo.findAllRecordsByAuditId(audit_master.getId());
+		List<ERB_Audit_Staging> objList = oERB_Audit_StagingRepo.findAllRecordsByAuditId(audit_master.getId());
 		for(ERB_Audit_Staging obj : objList)
 		{
 			ERB_Audit_Final oFinal = ERB_Audit_StagingToFinalMapper.convertStagingToFinal(obj);
@@ -383,9 +405,9 @@ public class Audit_MasterServiceImpl implements Audit_MasterService {
 		
 		// Final save into the Database. Single commit.
 		try {
-			Audit_Master savedAudit = oAudit_MasterRepository.save(audit_master); 
-			return Audit_MasterMapper.maptoDTO(savedAudit);	
-			
+			Audit_Master savedAudit = oAudit_MasterRepository.save(audit_master);
+			return Audit_MasterMapper.maptoDTO(savedAudit);
+
 		}
 		catch(Exception e)
 		{
@@ -393,6 +415,7 @@ public class Audit_MasterServiceImpl implements Audit_MasterService {
 			e.printStackTrace();
 			throw new RuntimeErrorException(new Error(), "Exception occurred while updating Audit master record.");
 		}
+//		return Audit_MasterMapper.maptoDTO(audit_master);
 	}
 	
 	

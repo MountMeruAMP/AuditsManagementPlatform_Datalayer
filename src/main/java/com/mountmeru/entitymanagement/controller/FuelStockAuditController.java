@@ -1,5 +1,6 @@
 package com.mountmeru.entitymanagement.controller;
 
+import com.mountmeru.entitymanagement.dto.EmailDTO;
 import com.mountmeru.entitymanagement.dto.ProductDTO;
 import com.mountmeru.entitymanagement.jsonresponses.common.ResponseErrorVo;
 import com.mountmeru.entitymanagement.jsonresponses.common.ResponseVO;
@@ -12,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -73,5 +75,14 @@ public class FuelStockAuditController {
         }
 
         return response;
+    }
+
+    @PostMapping(value = "/generatepdf", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String generatePdfForFuelStockAudit(@RequestBody Map<String, String> req) {
+
+
+        oFuelStockAuditService.generatePDF(req.get("fileName"));
+
+        return "Successful";
     }
 }

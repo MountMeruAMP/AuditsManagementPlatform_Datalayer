@@ -14,4 +14,11 @@ public class Constants {
 	public static final String roleCM = "CM";
 	public static final String TOP = "Top";
 	public static final String BOTTOM = "Bottom";
+	public static final String SMS_BASE_URL = "http://sms.genialconsultancy.com/submitsms.jsp?";
+
+	public static String MESSAGE_TEMPLATE = "Your One Time Password (OTP) to login to the Meru - Audit Management Platform is <USEROTP> . " +
+			"This will be valid for the next 180 seconds. - Mount Meru IT Team.";
+
+	public static String EMAIL_SUBJECT = "Testing subject";
+	public static String EMAIL_CONTENT = "Testing content";
 }

@@ -11,5 +11,6 @@ public interface FuelStockAuditService {
     ProductDTO createProduct(ProductDTO productDTO);
     Optional<ProductDTO> getProduct(long loginUserId);
 
+    Optional<String> generatePDF(String source);
 
 }
