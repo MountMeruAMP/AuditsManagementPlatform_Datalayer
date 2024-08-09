@@ -21,4 +21,5 @@ public class Constants {
 
 	public static String EMAIL_SUBJECT = "Testing subject";
 	public static String EMAIL_CONTENT = "Testing content";
+	public static String TEMP_DIR = "assets/temp/";
 }

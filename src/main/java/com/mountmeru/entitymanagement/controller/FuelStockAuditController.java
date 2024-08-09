@@ -77,11 +77,19 @@ public class FuelStockAuditController {
         return response;
     }
 
+    @PostMapping(value = "/createfuelstockaudit", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String createForFuelStockAudit(@RequestBody Map<String, String> req) {
+
+        oFuelStockAuditService.createFuelStockAudit(req.get("stationCode"));
+
+        return "Successful";
+    }
+
     @PostMapping(value = "/generatepdf", produces = MediaType.APPLICATION_JSON_VALUE)
     public String generatePdfForFuelStockAudit(@RequestBody Map<String, String> req) {
 
 
-        oFuelStockAuditService.generatePDF(req.get("fileName"));
+        oFuelStockAuditService.testPdf(req.get("fileName"));
 
         return "Successful";
     }
